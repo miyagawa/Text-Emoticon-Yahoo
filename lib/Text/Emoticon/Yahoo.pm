@@ -2,15 +2,18 @@ package Text::Emoticon::Yahoo;
 
 use strict;
 use vars qw($VERSION);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
-use vars qw(%Default %EmoticonMap $EmoticonRE);
+use Text::Emoticon 0.03;
+use base qw(Text::Emoticon);
 
-%Default = (
-    imgbase => ".",
-    xhtml   => 1,
-    class   => undef,
-);
+sub default_config {
+    return {
+        imgbase => "http://us.i1.yimg.com/us.yimg.com/i/mesg/emoticons6",
+        xhtml   => 1,
+        class   => undef,
+    };
+}
 
 # Table autogernerated from emoticons.php using
 # use LWP::Simple
@@ -24,7 +27,7 @@ use vars qw(%Default %EmoticonMap $EmoticonRE);
 #    printf("%-6s => '%s',\n", "'$smile'", $img);
 # }
 
-%EmoticonMap = (
+__PACKAGE__->register_subclass({
 ':)'   => '1.gif',
 ':('   => '2.gif',
 ';)'   => '3.gif',
@@ -100,32 +103,7 @@ use vars qw(%Default %EmoticonMap $EmoticonRE);
 '^:)^' => '77.gif',
 ':-j'  => '78.gif',
 '(*)'  => '79.gif',
-);
-
-my $re = join "|", map quotemeta($_), keys %EmoticonMap;
-$EmoticonRE = qr/($re)/;
-
-sub new {
-    my($class, %opt) = @_;
-    my %attr = (%Default, %opt);
-    bless \%attr, $class;
-}
-
-sub filter {
-    my($self, $text) = @_;
-    return unless defined $text;
-
-    $text =~ s{$EmoticonRE}{$self->do_filter($EmoticonMap{$1})}eg;
-    return $text;
-}
-
-sub do_filter {
-    my($self, $icon) = @_;
-    my $class = $self->{class} ? qq( class="$self->{class}") : "";
-    my $xhtml = $self->{xhtml} ? qq( /) : "";
-
-    return qq(<img src="$self->{imgbase}/$icon"$class$xhtml>)
-}
+});
 
 1;
 __END__
@@ -170,7 +148,10 @@ Constructs new Text::Emoticon::Yahoo object. It accepts two options:
 
 =item imgbase
 
-Base URL where icon gif files are located. It defaults to ".", meaning it links to images in current directory. Though you can use "http://us.i1.yimg.com/us.yimg.com/i/mesg/emoticons6/" (the Yahoo site) as C<imgbase> value, I don't recommend that, as there's a possibility Yahoo! will ban your site.
+Base URL where icon gif files are located. It defaults to
+"http://us.i1.yimg.com/us.yimg.com/i/mesg/emoticons6/" (the Yahoo
+site), but I don't recommend that, as there's a possibility Yahoo!
+will ban your site.
 
 =item xhtml
 

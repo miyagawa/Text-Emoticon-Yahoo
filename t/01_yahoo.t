@@ -7,13 +7,13 @@ my $text = "blah ;)blah :D";
 
 my @Tests = (
     # args, filtered_text
-    [ { },
+    [ { imgbase => '.' },
       qq(blah <img src="./3.gif" />blah <img src="./4.gif" />) ],
     [ { imgbase => "http://example.com/img" },
       qq(blah <img src="http://example.com/img/3.gif" />blah <img src="http://example.com/img/4.gif" />) ],
-    [ { xhtml => 0 },
+    [ { imgbase => '.', xhtml => 0 },
       qq(blah <img src="./3.gif">blah <img src="./4.gif">) ],
-    [ { class => "emo" },
+    [ { imgbase => '.', class => "emo" },
       qq(blah <img src="./3.gif" class="emo" />blah <img src="./4.gif" class="emo" />) ],
 );
 
